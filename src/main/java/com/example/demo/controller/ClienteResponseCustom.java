@@ -6,11 +6,11 @@ package com.example.demo.controller;
 
 import com.example.demo.DTO.ClienteDTO;
 import com.example.demo.entity.Cliente;
+import com.example.demo.exception.OutputEntity;
 import com.example.demo.service.ClienteService;
+import com.example.demo.util.Response;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,68 +28,80 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/api/v1/test")
-public class ClienteTestController {
+@RequestMapping("/api/v1/custom")
+public class ClienteResponseCustom {
 
     @Autowired
     private ClienteService clienteService;
 
-    //Listar clientes
+    //Listar Cliente
     @GetMapping(value = "/listarClientes")
-    public ResponseEntity<List> listarCliente() {
+    public ResponseEntity<OutputEntity> listarCliente() {
+        OutputEntity<List<Cliente>> out = new OutputEntity<>();
         try {
             List<Cliente> result = clienteService.findAllClientes();
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            if (result == null) {
+                out.failed(Response.NOTFOUND.getCode(), Response.NOTFOUND.getKey(), result);
+            } else {
+                out.succes(Response.OK.getCode(), Response.OK.getKey(), result);
+            }
+
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            out.error();
+
         }
+        return new ResponseEntity<>(out, out.getCode());
     }
 
-    //Guardar cliente
+    //Guardar Cliente
     @PostMapping(value = "/guardarCliente")
-    public ResponseEntity<Cliente> guardarCliente(@RequestBody ClienteDTO cliente) {
+    public ResponseEntity<OutputEntity> guardarCliente(@RequestBody ClienteDTO cliente) {
+        OutputEntity<Cliente> out = new OutputEntity<>();
         try {
             Cliente result = clienteService.saveCliente(cliente);
-            return new ResponseEntity<>(result, HttpStatus.CREATED);
+            out.succes(Response.CREATED.getCode(), Response.CREATED.getKey(), result);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            out.error();
         }
+        return new ResponseEntity<>(out, out.getCode());
     }
 
-    //Buscar cliente
+    //Buscar Cliente
     @GetMapping(value = "/buscarCliente/{id}")
-    public ResponseEntity<Cliente> buscarCliente(@PathVariable Integer id) {
+    public ResponseEntity<OutputEntity> buscarCliente(@PathVariable Integer id) {
+        OutputEntity<Cliente> out = new OutputEntity<>();
         try {
             Cliente result = clienteService.findClienteById(id);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            out.succes(Response.OK.getCode(), Response.OK.getKey(), result);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            out.error();
         }
+        return new ResponseEntity<>(out, out.getCode());
     }
 
-    //Actualizar Cliente
+    //Actualizar cliente
     @PutMapping(value = "/actualizarCliente/{id}")
-    public ResponseEntity<Integer> actualizarCliente(@PathVariable Integer id, @RequestBody ClienteDTO cliente) {
+    public ResponseEntity<OutputEntity> updateCliente(@PathVariable Integer id, @RequestBody ClienteDTO cliente) {
+        OutputEntity<Integer> out = new OutputEntity<>();
         try {
             Integer result = clienteService.updateCliente(id, cliente);
-            if (result == 1) {
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(result, HttpStatus.CONFLICT);
+            out.succes(Response.UPDATE.getCode(), Response.UPDATE.getKey(), result);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            out.error();
         }
+        return new ResponseEntity<>(out, out.getCode());
     }
 
-    //Eliminar Cliente
+    //Eliminar cliente
     @DeleteMapping(value = "/eliminarCliente/{id}")
-    public ResponseEntity<Integer> eliminarCliente(@PathVariable Integer id) {
+    public ResponseEntity<OutputEntity> deleteCliente(@PathVariable Integer id) {
+        OutputEntity<Integer> out = new OutputEntity<>();
         try {
             Integer result = clienteService.deleteCliente(id);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            out.succes(Response.DELETED.getCode(), Response.DELETED.getKey(), result);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            out.error();
         }
+        return new ResponseEntity<>(out, out.getCode());
     }
-
 }

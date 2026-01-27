@@ -35,13 +35,14 @@ public class ClienteServiceImpl implements ClienteService {
     //Guardar Nuevo Cliente
     @Transactional
     @Override
-    public Integer saveCliente(ClienteDTO cliente) {
+    public Cliente saveCliente(ClienteDTO cliente) {
         Cliente guardarCliente = new Cliente();
         guardarCliente.setNombre(cliente.getNombre());
         guardarCliente.setApellido(cliente.getApellido());
         guardarCliente.setEmail(cliente.getEmail());
         clienteRepository.save(guardarCliente); //Guardamos los datos en la tabla
-        return 1; //Retornar un entero en caso de exito
+        Cliente clienteGuardado = guardarCliente;
+        return clienteGuardado; //Retornar el objeto guardado
     }
 
     //Buscar cliente

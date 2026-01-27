@@ -19,7 +19,7 @@ public interface ClienteService {
     public List<Cliente> findAllClientes();
 
     //Guardar nuevo cliente
-    public Integer saveCliente(ClienteDTO cliente);
+    public Cliente saveCliente(ClienteDTO cliente);
 
     //Buscar cliente
     public Cliente findClienteById(Integer id);
