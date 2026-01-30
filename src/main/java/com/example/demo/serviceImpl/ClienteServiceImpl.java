@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -36,10 +35,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Transactional
     @Override
     public Cliente saveCliente(ClienteDTO cliente) {
-        Cliente guardarCliente = new Cliente();
-        guardarCliente.setNombre(cliente.getNombre());
-        guardarCliente.setApellido(cliente.getApellido());
-        guardarCliente.setEmail(cliente.getEmail());
+        Cliente guardarCliente = Cliente.crear(
+                cliente.getNombre(),
+                cliente.getApellido(),
+                cliente.getEmail());
         clienteRepository.save(guardarCliente); //Guardamos los datos en la tabla
         Cliente clienteGuardado = guardarCliente;
         return clienteGuardado; //Retornar el objeto guardado
@@ -58,9 +57,10 @@ public class ClienteServiceImpl implements ClienteService {
     public Integer updateCliente(Integer id, ClienteDTO cliente) {
         Cliente updateCliente = clienteRepository.findClienteById(id);
         if (updateCliente != null) {
-            updateCliente.setNombre(cliente.getNombre());
-            updateCliente.setApellido(cliente.getApellido());
-            updateCliente.setEmail(cliente.getEmail());
+            updateCliente = Cliente.crear(
+                    cliente.getNombre(),
+                    cliente.getApellido(),
+                    cliente.getEmail());
             clienteRepository.save(updateCliente);
             return 1; //Retornar un entero 1 en caso de exito;
         } else {
